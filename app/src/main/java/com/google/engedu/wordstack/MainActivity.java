@@ -21,6 +21,7 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -47,9 +48,12 @@ public class MainActivity extends AppCompatActivity {
     private Random random = new Random();
     private StackedLayout stackedLayout;
     private String word1, word2;
-
+    private ViewGroup word1LinearLayout;
+    private ViewGroup word2LinearLayout;
+    private Stack<LetterTile> placedTiles = new Stack<LetterTile>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AssetManager assetManager = getAssets();
@@ -72,12 +76,12 @@ public class MainActivity extends AppCompatActivity {
         stackedLayout = new StackedLayout(this);
         verticalLayout.addView(stackedLayout, 3);
 
-        View word1LinearLayout = findViewById(R.id.word1);
-        word1LinearLayout.setOnTouchListener(new TouchListener());
-        //word1LinearLayout.setOnDragListener(new DragListener());
-        View word2LinearLayout = findViewById(R.id.word2);
-        word2LinearLayout.setOnTouchListener(new TouchListener());
-        //word2LinearLayout.setOnDragListener(new DragListener());
+        word1LinearLayout = findViewById(R.id.word1);
+       // word1LinearLayout.setOnDragListener(new TouchListener());
+        word1LinearLayout.setOnDragListener(new DragListener());
+        word2LinearLayout = findViewById(R.id.word2);
+        //word2LinearLayout.setOnTouchListener(new TouchListener());
+        word2LinearLayout.setOnDragListener(new DragListener());
     }
 
     private class TouchListener implements View.OnTouchListener {
@@ -86,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN && !stackedLayout.empty()) {
                 LetterTile tile = (LetterTile) stackedLayout.peek();
+
                 tile.moveToViewGroup((ViewGroup) v);
                 if (stackedLayout.empty()) {
                     TextView messageBox = (TextView) findViewById(R.id.message_box);
@@ -96,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
                  **  YOUR CODE GOES HERE
                  **
                  **/
+                placedTiles.push(tile);
                 return true;
             }
             return false;
@@ -127,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
                     // Dropped, reassign Tile to the target Layout
                     LetterTile tile = (LetterTile) event.getLocalState();
                     tile.moveToViewGroup((ViewGroup) v);
+                    placedTiles.push(tile);
                     if (stackedLayout.empty()) {
                         TextView messageBox = (TextView) findViewById(R.id.message_box);
                         messageBox.setText(word1 + " " + word2);
@@ -143,6 +150,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean onStartGame(View view) {
+        word1LinearLayout.removeAllViews();
+        word2LinearLayout.removeAllViews();
+        stackedLayout.clear();
         TextView messageBox = (TextView) findViewById(R.id.message_box);
         messageBox.setText("Game started");
 
@@ -161,9 +171,9 @@ public class MainActivity extends AppCompatActivity {
         Log.i("test", "message is " + msg);
 
 
-//        for (int i = 0; i < msg.length(); i++) {
-//            new LetterTile(new Context(), msg.charAt(i));
-//        }
+        for (int i = msg.length() - 1; i >= 0; i--) {
+            stackedLayout.push(new LetterTile(this , msg.charAt(i)));
+        }
 
 //        messageBox.setText(msg);
         return true;
@@ -210,6 +220,11 @@ public class MainActivity extends AppCompatActivity {
          **  YOUR CODE GOES HERE
          **
          **/
+        if (!placedTiles.empty()){
+            placedTiles.pop().moveToViewGroup(stackedLayout);
+        }
+
+
         return true;
     }
 }
