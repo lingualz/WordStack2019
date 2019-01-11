@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private ViewGroup word1LinearLayout;
     private ViewGroup word2LinearLayout;
     private Stack<LetterTile> placedTiles = new Stack<LetterTile>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AssetManager assetManager = getAssets();
@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
             String line = null;
             while((line = in.readLine()) != null) {
                 String word = line.trim();
-
                 if (word.length() == WORD_LENGTH) {
                     words.add(word);
                 }
@@ -96,11 +95,6 @@ public class MainActivity extends AppCompatActivity {
                     TextView messageBox = (TextView) findViewById(R.id.message_box);
                     messageBox.setText(word1 + " " + word2);
                 }
-                /**
-                 **
-                 **  YOUR CODE GOES HERE
-                 **
-                 **/
                 placedTiles.push(tile);
                 return true;
             }
@@ -138,11 +132,6 @@ public class MainActivity extends AppCompatActivity {
                         TextView messageBox = (TextView) findViewById(R.id.message_box);
                         messageBox.setText(word1 + " " + word2);
                     }
-                    /**
-                     **
-                     **  YOUR CODE GOES HERE
-                     **
-                     **/
                     return true;
             }
             return false;
@@ -175,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
             stackedLayout.push(new LetterTile(this , msg.charAt(i)));
         }
 
-//        messageBox.setText(msg);
         return true;
     }
 
@@ -215,16 +203,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean onUndo(View view) {
-        /**
-         **
-         **  YOUR CODE GOES HERE
-         **
-         **/
-        if (!placedTiles.empty()){
+        if (!placedTiles.empty()) {
             placedTiles.pop().moveToViewGroup(stackedLayout);
         }
-
-
         return true;
     }
 }
